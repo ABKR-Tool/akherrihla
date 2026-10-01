@@ -196,7 +196,7 @@ func _build_title_screen() -> void:
 	separator.custom_minimum_size = Vector2(0, 1)
 	content.add_child(separator)
 
-	var name_caption := _label("اسم الناجي (اختياري)", 18, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
+	var name_caption := _label("اسم الناجي", 18, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
 	content.add_child(name_caption)
 	_name_input = LineEdit.new()
 	_name_input.name = "اسم الناجي"
