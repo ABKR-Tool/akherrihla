@@ -63,7 +63,8 @@ func _ready() -> void:
 	_build_story_screen()
 	_build_pause_screen()
 	_show_title()
-	_apply_responsive_layout()
+	_refresh_responsive_layout()
+	call_deferred("_refresh_responsive_layout")
 
 
 func _notification(what: int) -> void:
@@ -96,7 +97,9 @@ func _update_responsive_scale() -> bool:
 
 func _refresh_responsive_layout() -> void:
 	_apply_responsive_layout()
-	_layout_centered_panel(_title_panel, 780.0, 650.0)
+	var view := get_viewport_rect().size
+	var title_max_height := 860.0 if view.y > view.x * 1.15 else 650.0
+	_layout_centered_panel(_title_panel, 780.0, title_max_height)
 	_layout_centered_panel(_pause_panel, 540.0, 390.0)
 
 
