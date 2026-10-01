@@ -197,12 +197,12 @@ func _build_title_screen() -> void:
 	separator.custom_minimum_size = Vector2(0, 1)
 	content.add_child(separator)
 
-	var name_caption := _label("اسم الناجي", 18, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
+	var name_caption := _label("اسم الناجي (اختياري)", 18, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
 	content.add_child(name_caption)
 	_name_input = LineEdit.new()
 	_name_input.name = "اسم الناجي"
 	_name_input.text = ""
-	_name_input.placeholder_text = "محسن"
+	_name_input.placeholder_text = "اكتب اسمك هنا"
 	_name_input.max_length = 24
 	_name_input.custom_minimum_size = Vector2(0, 58)
 	_name_input.alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -213,6 +213,9 @@ func _build_title_screen() -> void:
 	_set_rtl(_name_input)
 	_style_field(_name_input)
 	content.add_child(_name_input)
+	var name_hint := _label("اتركه فارغًا لاستخدام الاسم الافتراضي «محسن»." , 15, COLOR_MUTED, HORIZONTAL_ALIGNMENT_RIGHT)
+	name_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	content.add_child(name_hint)
 
 	var country_caption := _label("مكان الهبوط الاضطراري", 18, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
 	content.add_child(country_caption)
