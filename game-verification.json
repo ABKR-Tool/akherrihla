@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "checks": [
+    {
+      "kind": "scene",
+      "path": "res://test/test_suite.tscn",
+      "expect": "[last-journey-tests] PASS:",
+      "profile": "source"
+    },
+    {
+      "kind": "script",
+      "path": "res://tools/verify_exported_pack.gd",
+      "expect": "[last-journey-pack] PASS:",
+      "profile": "pack"
+    }
+  ]
+}

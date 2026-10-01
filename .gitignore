@@ -1,0 +1,37 @@
+.godot/
+dist/
+node_modules/
+.manus-logs/
+__pycache__/
+*.py[cod]
+
+# مواد القالب التي لا تستخدمها مشاهد اللعبة؛ تبقى في نسخة المشروع الكاملة.
+/assets/**/*.png
+/assets/**/*.jpg
+/assets/**/*.jpeg
+/assets/**/*.webp
+/assets/**/*.gif
+/assets/**/*.bmp
+/assets/**/*.svg
+/assets/**/*.ico
+/assets/**/*.ogg
+/assets/**/*.wav
+/assets/**/*.mp3
+/assets/**/*.m4a
+/assets/**/*.mp4
+/assets/**/*.webm
+/assets/**/*.ttf
+/assets/**/*.otf
+/assets/**/*.woff
+/assets/**/*.woff2
+
+# أصول اللعبة وخطها المصدرية جزء من المشروع القابل لإعادة البناء.
+!/assets/share/
+!/assets/share/*.png
+!/assets/story/
+!/assets/story/runtime/
+!/assets/story/runtime/*.png
+!/assets/source-art/
+!/assets/source-art/*.png
+!/assets/fonts/
+!/assets/fonts/*.ttf

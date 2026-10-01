@@ -1,0 +1,493 @@
+{
+  "version": 1,
+  "start": "flight_intro",
+  "countries": {
+    "egypt": "مصر",
+    "morocco": "المغرب",
+    "chad": "تشاد"
+  },
+  "scenes": {
+    "flight_intro": {
+      "title": "قبل الانقطاع",
+      "location": "فوق البحر الأحمر",
+      "background": "assets/story/runtime/plane_crash.png",
+      "speaker": "الطيار",
+      "text": "كانت الطائرة تغادر السعودية في رحلة أخيرة عبر إفريقيا. مرّ الطيار بين المقاعد وناداك: «{player}، اربط الحزام واتبع تعليماتي». خلف النافذة، تتلاشى المدن تحت غبارٍ أحمر. لم يصدق أحدٌ أن الرحلة ستمر بسلام.",
+      "choices": [
+        {
+          "id": "check_supplies",
+          "text": "أفحص حقيبة الطوارئ وأثبتها قرب مقعدي",
+          "next": "engine_failure",
+          "effects": {"water": 1, "set_flags": {"emergency_kit": true}}
+        },
+        {
+          "id": "reassure_pilot",
+          "text": "أطمئن الطيار وأبقى مستعدًا للهبوط",
+          "next": "engine_failure",
+          "effects": {"trust": 1}
+        }
+      ]
+    },
+    "engine_failure": {
+      "title": "صوتٌ في المحرك",
+      "location": "فوق إفريقيا",
+      "background": "assets/story/runtime/plane_crash.png",
+      "speaker": "الطيار",
+      "text": "اهتزت المقصورة، ثم انطفأ أحد المحركين. تشقق صوت الطيار عبر السماعة: «سأحاول الهبوط في أقرب أرضٍ مستوية. لا تفتحوا الأبواب حتى تتوقف الطائرة». امتدت يدك إلى الحزام، فيما راحت الطائرة تميل نحو السحب.",
+      "choices": [
+        {
+          "id": "help_landing",
+          "text": "أساعد الطيار في تثبيت الحمولة وأتبع تعليماته",
+          "next": "crash_landing",
+          "effects": {"trust": 1}
+        },
+        {
+          "id": "protect_bag",
+          "text": "أشد الحزام وأحمي حقيبة المؤن من الانزلاق",
+          "next": "crash_landing",
+          "effects": {"health": 1}
+        }
+      ]
+    },
+    "crash_landing": {
+      "title": "الهبوط الاضطراري",
+      "location": "أرضٌ مجهولة",
+      "background": "assets/story/runtime/plane_crash.png",
+      "speaker": "الراوي",
+      "text": "ارتطمت الطائرة بالأرض وانزلقت حتى سكنت. مات الطيار متأثرًا بجراحه، ولم يجب جهاز الاتصال. أنت وحدك الآن، في {country_label}. أمامك خطٌ باهت في التراب، وخلفك دخانٌ يتصاعد من الجناح.",
+      "choices": [
+        {
+          "id": "leave_with_water",
+          "text": "أحمل ما بقي من الماء وأغادر قبل اشتداد الدخان",
+          "next_by_country": {"egypt": "egypt_police", "morocco": "morocco_checkpoint", "chad": "chad_south"},
+          "effects": {"water": 1}
+        },
+        {
+          "id": "search_cockpit",
+          "text": "أفتش قمرة القيادة عن خريطة قبل أن أبتعد",
+          "next_by_country": {"egypt": "egypt_police", "morocco": "morocco_checkpoint", "chad": "chad_south"},
+          "effects": {"set_flags": {"route_known": true}}
+        }
+      ]
+    },
+    "event_water": {
+      "title": "ماءٌ تحت الغبار",
+      "location_by_country": {"egypt": "طرف الطريق جنوبًا", "morocco": "بئرٌ قرب محطة قديمة", "chad": "بئرٌ ضحل في الجنوب"},
+      "background_by_country": {"egypt": "assets/story/runtime/egypt_ruins.png", "morocco": "assets/story/runtime/morocco_checkpoint.png", "chad": "assets/story/runtime/chad_desert.png"},
+      "speaker": "الراوي",
+      "text": "وجدت خزانًا صغيرًا لم تفسده الشمس بعد. عنده رجلٌ مسنّ يطلب جرعة ماء، وخلفكما طريقٌ لا يظهر له آخر. لا تكفي المؤونة لكل شيء، لكن قرارك سيبقى معك أطول من العطش.",
+      "choices": [
+        {
+          "id": "fill_bottle",
+          "text": "أملأ القارورة وأحتفظ بما أستطيع",
+          "next_by_country": {"egypt": "egypt_south", "morocco": "morocco_road", "chad": "chad_heat"},
+          "effects": {"water": 2, "days": 1}
+        },
+        {
+          "id": "share_water",
+          "text": "أقسم الماء مع الرجل وأطلب منه دلالة الطريق",
+          "next_by_country": {"egypt": "egypt_south", "morocco": "morocco_road", "chad": "chad_heat"},
+          "effects": {"water": 1, "trust": 2, "set_flags": {"route_known": true}, "days": 1}
+        },
+        {
+          "id": "give_last_water",
+          "text": "أعطي الرجل آخر ما لدي وأتابع بلا احتياط",
+          "next": "ending_hunger",
+          "effects": {"water": -5, "health": -1, "days": 2}
+        }
+      ]
+    },
+    "event_stranger": {
+      "title": "الغريب عند الحاجز",
+      "location_by_country": {"egypt": "طريق الجنوب", "morocco": "ممرٌّ بين البلدة والصحراء", "chad": "سهلٌ حجري في الجنوب"},
+      "background_by_country": {"egypt": "assets/story/runtime/egypt_ruins.png", "morocco": "assets/story/runtime/morocco_checkpoint.png", "chad": "assets/story/runtime/chad_desert.png"},
+      "speaker": "الغريب",
+      "text": "خرج رجلٌ من خلف حافلة محترقة. قال بصوتٍ متعب: «لا أريد متاعك. أحتاج أن أعرف أي طريقٍ ما زال مفتوحًا». نظر إلى حقيبتك، ثم أشاح بعينيه. لم تعرف إن كان صادقًا أم خائفًا مثلك.",
+      "choices": [
+        {
+          "id": "help_stranger",
+          "text": "أعطيه جرعة ماء وأطلب منه أن يدلني على الطريق",
+          "next_by_country": {"egypt": "egypt_mercenaries", "morocco": "morocco_mercenaries", "chad": "chad_malik"},
+          "effects": {"water": -1, "trust": 2, "set_flags": {"route_known": true}, "days": 1}
+        },
+        {
+          "id": "ask_before_helping",
+          "text": "أسأله عن الحاجز أولًا وأبقي المسافة بيننا",
+          "next_by_country": {"egypt": "egypt_mercenaries", "morocco": "morocco_mercenaries", "chad": "chad_malik"},
+          "effects": {"trust": 1, "days": 1}
+        },
+        {
+          "id": "leave_stranger",
+          "text": "أواصل السير بصمت ولا ألتفت إلى الوراء",
+          "next_by_country": {"egypt": "egypt_mercenaries", "morocco": "morocco_mercenaries", "chad": "chad_malik"},
+          "effects": {"trust": -1, "water": -1, "days": 1}
+        }
+      ]
+    },
+    "event_zombies": {
+      "title": "حين يلتفت الموتى",
+      "location_by_country": {"egypt": "شارعٌ مقطوع قرب النيل", "morocco": "حيٌّ مهجور عند الأطلس", "chad": "طريقٌ ترابي في الشمال"},
+      "background_by_country": {"egypt": "assets/story/runtime/egypt_ruins.png", "morocco": "assets/story/runtime/morocco_checkpoint.png", "chad": "assets/story/runtime/chad_desert.png"},
+      "speaker": "الراوي",
+      "text": "توقفت الريح فجأة. من بين السيارات ظهروا: أجسادٌ تتحرك ببطء، لكنها تتجه إلى أي صوت. لم يعد الطريق أمامك خاليًا، ولم يعد الركض خيارًا بلا ثمن.",
+      "choices": [
+        {
+          "id": "hide_zombies",
+          "text": "أختبئ خلف الجدار حتى تمر المجموعة",
+          "next_by_country": {"egypt": "egypt_south", "morocco": "morocco_mercenaries", "chad": "chad_north"},
+          "effects": {"water": -1, "days": 1}
+        },
+        {
+          "id": "run_zombies",
+          "text": "أركض عبر الفجوة قبل أن يقتربوا",
+          "next_by_country": {"egypt": "egypt_south", "morocco": "morocco_mercenaries", "chad": "chad_north"},
+          "effects": {"health": -1, "water": -1, "days": 1}
+        },
+        {
+          "id": "make_noise",
+          "text": "أطلق صوتًا بعيدًا لأصرفهم، ثم أخطئ تقدير المسافة",
+          "next": "ending_zombies",
+          "effects": {"health": -1}
+        }
+      ]
+    },
+    "event_road": {
+      "title": "مفترقٌ بلا لافتة",
+      "location_by_country": {"egypt": "مشارف الوادي", "morocco": "طريقٌ صحراوي قديم", "chad": "الممرّ الشمالي"},
+      "background_by_country": {"egypt": "assets/story/runtime/egypt_ruins.png", "morocco": "assets/story/runtime/morocco_checkpoint.png", "chad": "assets/story/runtime/chad_desert.png"},
+      "speaker": "الراوي",
+      "text": "انقسم الطريق إلى مساراتٍ لا تحمل أسماء. تركت القوافل أثرًا متقطعًا في الرمال، وكانت الريح تمحوه قليلًا كل دقيقة. أمامك طريقٌ أطول لكنه أوضح، وطريقٌ قصير لا تعرف إلى أين ينتهي.",
+      "choices": [
+        {
+          "id": "long_road",
+          "text": "أختار الطريق الأطول وأتتبع العلامات الثابتة",
+          "next_by_country": {"egypt": "egypt_convoy", "morocco": "morocco_crossing", "chad": "chad_north"},
+          "effects": {"water": -1, "days": 2, "set_flags": {"route_known": true}}
+        },
+        {
+          "id": "short_road",
+          "text": "أختصر المسافة وأعبر السهل المكشوف",
+          "next_by_country": {"egypt": "egypt_convoy", "morocco": "morocco_crossing", "chad": "chad_north"},
+          "effects": {"health": -1, "water": -1, "days": 1}
+        },
+        {
+          "id": "blind_road",
+          "text": "أترك العلامات وأدخل الصحراء من دون اتجاه",
+          "next": "ending_desert",
+          "effects": {"water": -2, "days": 2}
+        }
+      ]
+    },
+    "egypt_police": {
+      "title": "نقطة التفتيش",
+      "location": "مشارف القاهرة",
+      "background": "assets/story/runtime/egypt_ruins.png",
+      "speaker": "الشرطي",
+      "text": "رفع شرطيٌ متعب كفه كي تتوقف. سأل عن الطائرة وعن الطيار، ثم لمح الغبار على وجهك. خلف الحاجز، كان ضابطٌ يراقب الطريق من نافذة غرفة صغيرة.",
+      "choices": [
+        {"id": "tell_truth", "text": "أخبره بما حدث وأطلب ماءً وطريقًا إلى الجنوب", "next": "egypt_salem", "effects": {"trust": 1, "days": 1}},
+        {"id": "report_pilot", "text": "أبلغه أن الطيار مات وأشير إلى موقع الحطام", "next": "egypt_salem", "effects": {"trust": 1}},
+        {"id": "refuse_police", "text": "أرفض الإجابة وأحاول تجاوز الحاجز", "next": "egypt_detained", "effects": {"trust": -1, "water": -1, "days": 1}}
+      ]
+    },
+    "egypt_detained": {
+      "title": "غرفةٌ بلا نوافذ",
+      "location": "مخفرٌ مهجور",
+      "background": "assets/story/runtime/egypt_ruins.png",
+      "speaker": "الضابط",
+      "text": "أغلق الضابط الباب، لكنه لم يرفع صوته. قال إن الأوامر القديمة لا تزال تمنع الناس من عبور الطريق. من الخارج، سُمعت ثلاث طرقاتٍ متباعدة، ثم خيم الصمت.",
+      "choices": [
+        {"id": "apologize_officer", "text": "أشرح أنني ناجٍ وأطلب منه أن يثق بي", "next": "egypt_salem", "effects": {"trust": 1}},
+        {"id": "slip_away", "text": "أهرب عندما ينشغل الضابط بإغلاق البوابة", "next": "egypt_alley", "effects": {"health": -1, "days": 1}}
+      ]
+    },
+    "egypt_salem": {
+      "title": "سالم عند السلم",
+      "location": "زقاقٌ خلف المخفر",
+      "background": "assets/story/runtime/egypt_ruins.png",
+      "speaker": "سالم",
+      "text": "ظهر سالم، عامل النظافة الذي بقي يحرس المخفر بعد رحيل الجميع. حمل زجاجة ماء وخريطةً ورقية مطوية. قال: «أعرف طريقًا إلى الجنوب، لكن لا أستطيع حمل الخريطة والماء وحدي». ثم انتظر جوابك.",
+      "choices": [
+        {"id": "share_with_salem", "text": "أشاركه الماء وأطلب منه أن يرافقني", "next": "egypt_alley", "effects": {"water": -1, "trust": 2, "add_companion": "سالم", "set_flags": {"route_known": true}}},
+        {"id": "take_salem_map", "text": "آخذ الخريطة والماء وأعده بأن أحفظها", "next": "egypt_alley", "effects": {"water": 1, "trust": 1, "set_flags": {"route_known": true}}},
+        {"id": "leave_salem", "text": "أشكره وأتابع وحدي من دون أن آخذ شيئًا", "next": "egypt_alley", "effects": {"trust": -1}}
+      ]
+    },
+    "egypt_alley": {
+      "title": "الطريق القديم",
+      "location": "أطراف القاهرة",
+      "background": "assets/story/runtime/egypt_ruins.png",
+      "speaker": "الراوي",
+      "text": "انتهى الزقاق عند قناةٍ جافة، وبالقرب منها بابٌ نصف مفتوح. من جهة الشارع الرئيسي جاء صوت زجاجٍ يتكسر. كان سالم، إن بقي معك، يراقب كل حركة ولا يتكلم.",
+      "choices": [
+        {"id": "canal_path", "text": "أتبع القناة الجافة بحثًا عن الماء", "next": "event_water", "effects": {"days": 1}},
+        {"id": "main_street", "text": "أعبر الشارع قبل أن يهدأ الصوت", "next": "event_zombies", "effects": {"days": 1}},
+        {"id": "wrong_turn_egypt", "text": "أتبع الدخان إلى الطريق المفتوح من دون خريطة", "next": "ending_desert", "effects": {"water": -1, "days": 2}}
+      ]
+    },
+    "egypt_south": {
+      "title": "جنوب النهر",
+      "location": "الطريق إلى وادي حلفا",
+      "background": "assets/story/runtime/egypt_ruins.png",
+      "speaker": "الراوي",
+      "text": "صار النهر خلفك، وصارت إشارات الجنوب أكثر تباعدًا. أخبرك سالم أن طريق الحدود يمر بمحطاتٍ مهجورة، وأن بعض الرجال يفرضون ثمنًا على كل من يعبر. غطت سحابةٌ من الغبار الأفق.",
+      "choices": [
+        {"id": "ask_stranger_egypt", "text": "أطلب من الغريب عند الحاجز أن يصف الطريق", "next": "event_stranger", "effects": {"days": 1}},
+        {"id": "old_south_road", "text": "أتبع علامات القافلة إلى الطريق القديم", "next": "egypt_mercenaries", "effects": {"days": 1, "set_flags": {"route_known": true}}},
+        {"id": "river_supply", "text": "أحاذي النهر بحثًا عن مؤونة ثم أبتعد", "next": "egypt_mercenaries", "effects": {"water": 1, "food": 1, "days": 2}}
+      ]
+    },
+    "egypt_mercenaries": {
+      "title": "عادل النمر",
+      "location": "حاجزٌ في طريق الجنوب",
+      "background": "assets/story/runtime/egypt_ruins.png",
+      "speaker": "عادل النمر",
+      "text": "تقدم قائد المرتزقة عادل النمر، وخلفه رجالٌ لا يرفعون أصواتهم. قال: «الطريق ليس مجانيًا. اتركوا الطعام وتمروا، أو ابقوا حتى نقرر». نظر سالم إلى الأرض كي لا يجيب عنه أحد.",
+      "choices": [
+        {"id": "bargain_adel", "text": "أساومه على جزءٍ من الطعام مقابل ممرٍ آمن", "next": "egypt_convoy", "effects": {"food": -1, "trust": 1, "days": 1}},
+        {"id": "sneak_adel", "text": "أشغله بالكلام ثم أنسحب عبر السور", "next": "egypt_convoy", "effects": {"water": -1, "days": 1, "remove_companion": "سالم", "set_flags": {"route_known": true}}},
+        {"id": "stand_for_salem", "text": "أرفض ترك سالم وأبقى أمام الحاجز", "next": "ending_mercenaries", "effects": {"health": -1}}
+      ]
+    },
+    "egypt_convoy": {
+      "title": "قافلة الجنوب",
+      "location": "الممرّ نحو الحدود",
+      "background": "assets/story/runtime/egypt_ruins.png",
+      "speaker": "الراوي",
+      "text": "تحركت شاحنةٌ قديمة ببطء، وسمحت لك بالمسير خلفها. في الأفق أرضٌ مفتوحة، لكنك تعرف أن آخر نقطة آمنة ليست نهاية الرحلة. عليك أن تختار بين الخريطة والعلامات والاندفاع.",
+      "choices": [
+        {"id": "use_map_egypt", "text": "أستعين بخريطة سالم وأتجه إلى الإشارة الشمالية", "next": "final_airfield", "requires": {"flag": "route_known"}, "effects": {"days": 1}},
+        {"id": "follow_convoy_egypt", "text": "أتبع أثر الشاحنة ولو استهلك الطريق الماء", "next": "final_airfield", "effects": {"water": -1, "days": 2, "set_flags": {"route_known": true}}},
+        {"id": "leave_convoy_egypt", "text": "أترك القافلة وأدخل السهل وحدي", "next": "ending_desert", "effects": {"water": -2, "days": 2}}
+      ]
+    },
+    "morocco_checkpoint": {
+      "title": "بوابةٌ في الغبار",
+      "location": "طريقٌ خارج مراكش",
+      "background": "assets/story/runtime/morocco_checkpoint.png",
+      "speaker": "الحارس",
+      "text": "وقف حارسٌ عند حاجزٍ قديم يلوح بعلمٍ باهت. لم يرفع سلاحه، لكنه أبقى يده قربه. قال: «الطريق إلى الشرق مغلق إلا لمن يعرف من يسأل». خلفه، كانت البلدة صامتةً على نحوٍ غير طبيعي.",
+      "choices": [
+        {"id": "truth_guard", "text": "أخبره أنني ناجٍ من هبوطٍ اضطراري وأطلب العبور", "next": "morocco_yassin", "effects": {"trust": 1, "set_flags": {"route_known": true}}},
+        {"id": "report_wreck_guard", "text": "أصف موقع الحطام وأطلب دليلًا إلى الشرق", "next": "morocco_yassin", "effects": {"trust": 1}},
+        {"id": "refuse_guard", "text": "أصمت وأبتعد عن البوابة قبل أن يبدل رأيه", "next": "morocco_detour", "effects": {"trust": -1, "days": 1}}
+      ]
+    },
+    "morocco_detour": {
+      "title": "المجرى الجاف",
+      "location": "أسفل الطريق الجبلي",
+      "background": "assets/story/runtime/morocco_checkpoint.png",
+      "speaker": "الراوي",
+      "text": "قادك الطريق إلى مجرى وادٍ جاف. وجدت آثار أقدامٍ حديثة تتجه شرقًا، وبقربها قطعة قماشٍ زرقاء علقت بصخرة. لم تعرف إن كان صاحبها ما زال قريبًا أم أن الأثر مجرد فخٍ قديم.",
+      "choices": [
+        {"id": "return_gate", "text": "أعود إلى الحاجز وأطلب العبور بهدوء", "next": "morocco_yassin", "effects": {"trust": 1}},
+        {"id": "follow_cloth", "text": "أتبع الأثر بحذرٍ نحو محطة الماء", "next": "morocco_market", "effects": {"days": 1, "set_flags": {"route_known": true}}},
+        {"id": "cross_dry_wadi", "text": "أعبر المجرى وحدي وأفقد أثر الطريق", "next": "event_zombies", "effects": {"water": -1, "days": 1}}
+      ]
+    },
+    "morocco_yassin": {
+      "title": "ياسين يعرف الممرّ",
+      "location": "حافة البلدة القديمة",
+      "background": "assets/story/runtime/morocco_checkpoint.png",
+      "speaker": "ياسين",
+      "text": "تقدم ياسين، سائقٌ بقيت شاحنته بين الحاجز والبلدة. قال: «الطريق الساحلي صار للغريب، والطريق الداخلي صار لمن يتحمل الصمت. أستطيع أن أريك العلامات، لكني لن أعدك بالأمان».",
+      "choices": [
+        {"id": "join_yassin", "text": "أقبل أن يرافقني ياسين وأشاركه ما أملك", "next": "morocco_market", "effects": {"water": 1, "trust": 2, "add_companion": "ياسين", "set_flags": {"route_known": true}, "days": 1}},
+        {"id": "take_yassin_directions", "text": "أطلب منه وصف الطريق وأكمل وحدي", "next": "morocco_market", "effects": {"trust": 1, "set_flags": {"route_known": true}}},
+        {"id": "decline_yassin", "text": "أشكره وأختار الطريق الذي لا يمر بالبلدة", "next": "morocco_market", "effects": {"trust": -1, "days": 1}}
+      ]
+    },
+    "morocco_market": {
+      "title": "سوقٌ بلا أصوات",
+      "location": "البلدة القديمة",
+      "background": "assets/story/runtime/morocco_checkpoint.png",
+      "speaker": "الراوي",
+      "text": "كانت أبواب السوق مفتوحة، لكن لا أحد ينادي على بضاعته. في مخزنٍ صغير وجدت صندوق ماءٍ متشققًا، وآخر يحوي أكياسًا جافة. على الجدار كتابةٌ قديمة تقول إن الطريق الشرقي يمر بمحطة الإرسال.",
+      "choices": [
+        {"id": "search_water_morocco", "text": "أفتش المخزن عن الماء ثم أتبع الطريق الشرقي", "next": "event_water", "effects": {"days": 1}},
+        {"id": "search_food_morocco", "text": "أجمع طعامًا جافًا وأغادر قبل حلول الظلام", "next": "morocco_road", "effects": {"food": 1, "days": 1}},
+        {"id": "take_all_morocco", "text": "أحمل ما أستطيع من دون أن أنظر إلى الوراء", "next": "event_road", "effects": {"water": 1, "food": 1, "trust": -1, "days": 1}}
+      ]
+    },
+    "morocco_road": {
+      "title": "علاماتٌ نحو الشرق",
+      "location": "الطريق الداخلي",
+      "background": "assets/story/runtime/morocco_checkpoint.png",
+      "speaker": "الراوي",
+      "text": "امتد الطريق بين التلال والبلدات الخالية. أشار ياسين إلى حجارةٍ مرصوصة على جانب المسار، وقال إن بعضها علامةٌ للقوافل القديمة. عند منعطفٍ لاحق، رأيت رجلًا يلوح لك من خلف حافلة محترقة.",
+      "choices": [
+        {"id": "ask_morocco_stranger", "text": "أتوقف عند الرجل وأسأله عن الطريق المفتوح", "next": "event_stranger", "effects": {"days": 1}},
+        {"id": "avoid_morocco_stranger", "text": "أتابع خلف ياسين من دون أن أقترب منه", "next": "morocco_mercenaries", "effects": {"days": 1, "set_flags": {"route_known": true}}},
+        {"id": "rush_morocco_road", "text": "أندفع عبر البلدة المهجورة قبل أن يتغير الطقس", "next": "event_zombies", "effects": {"water": -1, "days": 1}}
+      ]
+    },
+    "morocco_mercenaries": {
+      "title": "رشيد القاطع",
+      "location": "الممرّ بين الجبال",
+      "background": "assets/story/runtime/morocco_checkpoint.png",
+      "speaker": "رشيد القاطع",
+      "text": "أوقفك رجالٌ عند حاجزٍ جديد. تقدم رشيد القاطع، قائدهم، وقال: «لا أريد أن أؤذي أحدًا. أريد ما في حقائبكم، وبعدها لن أسأل عن وجهتكم». كانت الطريق خلفك ضيقة، والعودة تعني ليلةً في العراء.",
+      "choices": [
+        {"id": "bargain_rashid", "text": "أعرض جزءًا من الطعام مقابل عبورٍ سريع", "next": "morocco_crossing", "effects": {"food": -1, "trust": 1, "days": 1}},
+        {"id": "hide_rashid", "text": "أنتظر حتى ينشغل الحرس ثم أعبر من خلف الحاجز", "next": "morocco_crossing", "effects": {"water": -1, "days": 1, "remove_companion": "ياسين"}},
+        {"id": "refuse_rashid", "text": "أرفض تسليم المؤونة وأبقى في مكاني", "next": "ending_mercenaries", "effects": {"health": -1}}
+      ]
+    },
+    "morocco_crossing": {
+      "title": "المنعطف الشرقي",
+      "location": "حافة الصحراء",
+      "background": "assets/story/runtime/morocco_checkpoint.png",
+      "speaker": "ياسين",
+      "text": "خرجت من الممر إلى أرضٍ أوسع. قال ياسين إن محطة إرسالٍ قديمة تقود إلى المسار الذي يعبر الصحراء نحو تشاد، ثم أضاف: «إن ضاعت العلامات، لا تطارد أي ضوءٍ تراه».",
+      "choices": [
+        {"id": "follow_milestones", "text": "أتبع العلامات الحجرية إلى محطة الإرسال", "next": "morocco_north", "effects": {"water": -1, "days": 2, "set_flags": {"route_known": true}}},
+        {"id": "trust_yassin_crossing", "text": "أثق بدلالة ياسين وأحافظ على الماء", "next": "morocco_north", "requires": {"companion": "ياسين"}, "effects": {"trust": 1, "days": 1, "set_flags": {"route_known": true}}},
+        {"id": "shortcut_morocco", "text": "أختصر الطريق عبر الرمال التي لا تحمل أثرًا", "next": "ending_desert", "effects": {"water": -2, "days": 2}}
+      ]
+    },
+    "morocco_north": {
+      "title": "إشارةٌ من الشمال",
+      "location": "الطريق إلى تشاد",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "الراوي",
+      "text": "التقط جهازٌ محمول نبضةً ضعيفة من الشمال: طائرةٌ متوقفة قرب مهبطٍ ترابي. لم تكن الإشارة وعدًا بالنجاة، لكنها كانت أول دليلٍ واضح منذ الهبوط. تبقى مسافةٌ أخيرة عبر الصحراء.",
+      "choices": [
+        {"id": "take_beacon_morocco", "text": "أحفظ اتجاه الإشارة وأواصل السير نحو المهبط", "next": "final_airfield", "effects": {"set_flags": {"route_known": true}, "days": 1}},
+        {"id": "rest_morocco", "text": "أستريح قليلًا ثم أشارك ياسين آخر جرعة ماء", "next": "final_airfield", "effects": {"water": -1, "health": 1, "trust": 1, "days": 1, "set_flags": {"route_known": true}}},
+        {"id": "follow_wrong_light", "text": "أتبع ضوءًا بعيدًا لا يشبه إشارة الجهاز", "next": "ending_desert", "effects": {"water": -1, "days": 2}}
+      ]
+    },
+    "chad_south": {
+      "title": "بدايةٌ من الجنوب",
+      "location": "جنوب تشاد",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "الراوي",
+      "text": "هبطت الطائرة في جنوب تشاد، بعيدًا عن أي مدينةٍ مأهولة. مات الطيار، لكن لوحةَ الملاحة بقيت تعمل لحظاتٍ كافية لتظهر نقطةً شمالية. هدفك واضح: الوصول إلى طائرةٍ أخرى قرب المهبط قبل نفاد المؤونة.",
+      "choices": [
+        {"id": "seek_help_chad", "text": "أبحث عن أهل المنطقة قبل أن أسلك الطريق شمالًا", "next": "chad_moussa", "effects": {"days": 1}},
+        {"id": "follow_map_chad", "text": "أحفظ اتجاه الشمال وأتبع أثر العجلات", "next": "chad_moussa", "effects": {"set_flags": {"route_known": true}}}
+      ]
+    },
+    "chad_moussa": {
+      "title": "موسى ودفتر الريح",
+      "location": "قريةٌ مهجورة في الجنوب",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "موسى",
+      "text": "وجدت موسى قرب بئرٍ جافة، يحمل دفترًا صغيرًا رسم فيه اتجاهات الريح والطرق. قال: «الطائرة التي تبحث عنها شمالًا، لكن السير بلا ظلٍّ سيأخذ منك أكثر مما تتوقع». أشار إلى قارورة ماءٍ تحت قماش.",
+      "choices": [
+        {"id": "join_moussa", "text": "أطلب من موسى أن يرافقني وأتقاسم معه الماء", "next": "chad_well", "effects": {"water": 1, "trust": 2, "add_companion": "موسى", "set_flags": {"route_known": true}}},
+        {"id": "take_moussa_directions", "text": "أنسخ الاتجاهات وأتابع وحدي", "next": "chad_well", "effects": {"trust": 1, "set_flags": {"route_known": true}}},
+        {"id": "leave_moussa", "text": "أشكره وأمضي من دون أن آخذ دليله", "next": "chad_well", "effects": {"trust": -1, "days": 1}}
+      ]
+    },
+    "chad_well": {
+      "title": "بئرٌ أخير",
+      "location": "ممرٌّ حجري في الجنوب",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "الراوي",
+      "text": "كان البئر ضحلًا، لكن الماء في قاعه لم يجف. من بعيد ظهر رجلٌ مسنّ يحمل عصًا ويبحث عن الطريق إلى قريته. سأل موسى إن كان سيشاركه جرعةً، ثم ترك القرار لك.",
+      "choices": [
+        {"id": "search_chad_water", "text": "أملأ القارورة وأتبع طريق الشمال", "next": "event_water", "effects": {"days": 1}},
+        {"id": "follow_chad_tracks", "text": "أتبع آثار قافلةٍ مرت نحو الشمال", "next": "event_road", "effects": {"set_flags": {"route_known": true}, "days": 1}},
+        {"id": "share_chad_water", "text": "أقسم الماء مع الرجل وأطلب منه علامةً للطريق", "next": "chad_heat", "effects": {"water": -1, "trust": 2, "days": 1}}
+      ]
+    },
+    "chad_heat": {
+      "title": "نهارٌ لا يلين",
+      "location": "السهول شمال الجنوب",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "الراوي",
+      "text": "اشتدت الحرارة، وصارت حواف الطريق ترتجف. لم يبقَ ظلٌ إلا تحت صخرةٍ صغيرة. دلّك موسى على نجوم المساء، بينما بدت آثار أقدامٍ بعيدة تتجه إلى الممرّ الشمالي.",
+      "choices": [
+        {"id": "shelter_chad", "text": "أنتظر الغروب تحت الصخرة وأحمي الماء", "next": "event_stranger", "effects": {"health": 1, "water": -1, "days": 1, "set_flags": {"route_known": true}}},
+        {"id": "follow_stars_chad", "text": "أحفظ اتجاه النجوم وأمشي في الليل", "next": "chad_malik", "effects": {"water": -1, "days": 1, "set_flags": {"route_known": true}}},
+        {"id": "rush_chad", "text": "أواصل السير تحت الشمس حتى يختفي الطريق", "next": "ending_desert", "effects": {"health": -1, "water": -2, "days": 1}}
+      ]
+    },
+    "chad_malik": {
+      "title": "مالك عند الممرّ",
+      "location": "نقطةٌ قرب الطريق الشمالي",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "مالك",
+      "text": "اعترض مالك، قائد مجموعةٍ من الرجال، الطريقَ أمامك. قال: «لا أبحث عن شجار. لديّ ماءٌ قليل، لكننا لا نسمح لأحدٍ بالمرور بلا سبب». أشار موسى إلى المسار الترابي، ثم سكت.",
+      "choices": [
+        {"id": "bargain_malik", "text": "أعرض جزءًا من الطعام مقابل العبور والماء", "next": "chad_north", "effects": {"food": -1, "water": 1, "trust": 1, "days": 1}},
+        {"id": "ask_malik_route", "text": "أطلب من مالك الاتجاه إلى الطائرة بدل المؤونة", "next": "chad_north", "effects": {"trust": 1, "set_flags": {"route_known": true}, "days": 1}},
+        {"id": "refuse_malik", "text": "أرفض التفاوض وأحاول المرور بالقوة وحدي", "next": "ending_mercenaries", "effects": {"health": -1}}
+      ]
+    },
+    "chad_north": {
+      "title": "نحو الأفق",
+      "location": "شمال تشاد",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "موسى",
+      "text": "ارتفعت الأرض قليلًا، فظهر جناحُ الطائرة عند طرف الأفق. قال موسى إن المهبط قديم، وإن الوقود ربما يكفي لمحاولةٍ واحدة. صار القرار الآن بين طريقٍ محسوب، وراحةٍ قصيرة، وصوتٍ يخرج من خلف الصخور.",
+      "choices": [
+        {"id": "read_moussa_map", "text": "أقرأ دفتر موسى وأتابع اتجاه المهبط", "next": "final_airfield", "requires": {"companion": "موسى"}, "effects": {"set_flags": {"route_known": true}, "days": 1}},
+        {"id": "track_plane_chad", "text": "أصعد التل وأتبع أثر الطائرة إلى المهبط", "next": "final_airfield", "effects": {"set_flags": {"route_known": true}, "water": -1, "days": 1}},
+        {"id": "answer_rock_sound", "text": "أتبع الصوت خلف الصخور بدل أن أتجه إلى الطائرة", "next": "ending_zombies", "effects": {"health": -1, "days": 1}}
+      ]
+    },
+    "final_airfield": {
+      "title": "الطائرة الأخيرة",
+      "location": "مهبطٌ ترابي في تشاد",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "الراوي",
+      "text": "وصلت إلى الطائرة قبل أن يبتلع الليل آخر ضوء. هيكلها مخدوش، ومقعد الطيار خالٍ، لكن لوحة التشغيل لم تمت. إن أشعلت المحرك، فلن تعرف إلى أين ستصل؛ وإن بقيت، فلن يأتي أحد ليبحث عنك.",
+      "choices": [
+        {"id": "start_plane", "text": "أستخدم الطريق الذي حفظته وأحاول تشغيل الطائرة", "next": "ending_escape", "requires": {"flag": "route_known"}, "effects": {"water": -1, "trust": 1}},
+        {"id": "radio_plane", "text": "أرسل إشارة استغاثة وأحاول تشغيل المحرك", "next": "ending_escape", "requires": {"water_min": 1}, "effects": {"water": -1}},
+        {"id": "wait_alone", "text": "أجلس قرب المدرج وأنتظر من دون أن أطلب المساعدة", "next": "ending_alone", "effects": {"days": 1}},
+        {"id": "leave_airfield", "text": "أترك الطائرة وأتبع خطواتٍ تتحرك في الظلام", "next": "ending_zombies", "effects": {"water": -1}}
+      ]
+    },
+    "ending_alone": {
+      "kind": "ending",
+      "title": "نهاية: الموت وحيدًا",
+      "location": "المهبط الأخير",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "الراوي",
+      "text": "بقيت قرب المدرج حتى خفتت آخر الأصوات. لم ينقصك طريقٌ فحسب؛ نقصك قرارُ أن تثق بأحدٍ حين كان ذلك ممكنًا. عند الفجر، لم يعد هناك من يسمع نداءك. انتهت رحلتك وحيدًا."
+    },
+    "ending_hunger": {
+      "kind": "ending",
+      "title": "نهاية: آخر قطرة",
+      "location": "طريقٌ بلا ظلّ",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "الراوي",
+      "text": "نفد الماء، ثم نفد الطعام. حاولت أن تواصل السير، لكن الجسد سبقك إلى التوقف. لم يكن الطريق أقصر من أن يُقطع؛ كانت المؤونة أقل من أن تكفي. انتهت الرحلة عطشًا وجوعًا."
+    },
+    "ending_desert": {
+      "kind": "ending",
+      "title": "نهاية: الضياع في الصحراء",
+      "location": "رمالٌ بلا علامة",
+      "background": "assets/story/runtime/chad_desert.png",
+      "speaker": "الراوي",
+      "text": "محا الهواء آثار قدميك، ثم محا آثار الطريق. حاولت العودة إلى المفترق، لكن كل اتجاهٍ صار يشبه الآخر. بقيت الطائرة قريبةً في خريطتك القديمة وبعيدةً في الواقع. ابتلعت الصحراء آخر رحلةٍ لك."
+    },
+    "ending_mercenaries": {
+      "kind": "ending",
+      "title": "نهاية: ثمن العبور",
+      "location": "حاجزٌ معزول",
+      "background": "assets/story/runtime/morocco_checkpoint.png",
+      "speaker": "الراوي",
+      "text": "لم يكن رجال الحاجز يبحثون عن طريقٍ جديد؛ كانوا يريدون أن يبقى الجميع محتاجًا إليهم. انتهى التفاوض حين انتهت خياراتك، ولم تعد قادرًا على الوصول إلى المهبط. ماتت رحلتك عند أيدي المرتزقة."
+    },
+    "ending_zombies": {
+      "kind": "ending",
+      "title": "نهاية: أصوات الليل",
+      "location": "طريقٌ مظلم",
+      "background": "assets/story/runtime/egypt_ruins.png",
+      "speaker": "الراوي",
+      "text": "كان الصوت أقرب مما ظننت. حين أدركت خطأك، لم يبقَ وقتٌ كافٍ للعودة أو الاختباء. اختفى الطريق تحت الأقدام المتعثرة، ثم انقطع كل شيء. التهمك الزومبي قبل أن ترى الصباح."
+    },
+    "ending_escape": {
+      "kind": "ending",
+      "title": "النهاية: أفقٌ جديد",
+      "location": "سماء تشاد",
+      "background": "assets/share/og.png",
+      "speaker": "الراوي",
+      "text": "اشتعل المحرك بعد محاولتين. لم يكن الوقود كثيرًا، ولم تكن النجاة مضمونة، لكن الطائرة ارتفعت عن التراب. تركت خلفك طرقًا ووجوهًا وقراراتٍ لن تنساها. لم يعد العالم كما كان؛ أما رحلتك، فلم تنتهِ بعد."
+    }
+  }
+}
