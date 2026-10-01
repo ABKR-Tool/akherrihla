@@ -3,6 +3,8 @@ extends Control
 const StoryEngineScript := preload("res://scripts/story_engine.gd")
 const FONT_PATH := "res://assets/fonts/NotoSansArabic-Regular.ttf"
 const TITLE_BACKGROUND := "res://assets/story/runtime/chad_desert.png"
+const BASE_UI_WIDTH := 1280.0
+const MAX_UI_SCALE := 3.6
 
 const COLOR_INK := Color(0.055, 0.071, 0.078, 0.96)
 const COLOR_INK_SOFT := Color(0.082, 0.105, 0.11, 0.95)
@@ -27,6 +29,7 @@ var _title_panel: PanelContainer
 var _name_input: LineEdit
 var _country_input: OptionButton
 var _story_layer: Control
+var _hud_panel: PanelContainer
 var _hud_location: Label
 var _hud_day: Label
 var _hud_health: Label
@@ -54,17 +57,58 @@ func _ready() -> void:
 	_country_labels = _engine.story.get("countries", {})
 	_font = load(FONT_PATH) as Font
 	_apply_theme()
+	_update_responsive_scale()
 	_build_base()
 	_build_title_screen()
 	_build_story_screen()
 	_build_pause_screen()
 	_show_title()
+	_apply_responsive_layout()
 
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED:
-		_layout_centered_panel(_title_panel, 780.0, 650.0)
-		_layout_centered_panel(_pause_panel, 540.0, 390.0)
+		if _update_responsive_scale():
+			call_deferred("_refresh_responsive_layout")
+		else:
+			_refresh_responsive_layout()
+
+
+func _update_responsive_scale() -> bool:
+	if not is_inside_tree():
+		return false
+	var css_width := 0.0
+	if OS.has_feature("web"):
+		var browser_width: Variant = JavaScriptBridge.eval("window.innerWidth")
+		if typeof(browser_width) == TYPE_FLOAT or typeof(browser_width) == TYPE_INT:
+			css_width = float(browser_width)
+	if css_width <= 0.0:
+		css_width = float(get_window().size.x)
+	if css_width <= 0.0:
+		return false
+	var window := get_window()
+	var target_scale := clampf(BASE_UI_WIDTH / css_width, 1.0, MAX_UI_SCALE)
+	if is_equal_approx(window.content_scale_factor, target_scale):
+		return false
+	window.content_scale_factor = target_scale
+	return true
+
+
+func _refresh_responsive_layout() -> void:
+	_apply_responsive_layout()
+	_layout_centered_panel(_title_panel, 780.0, 650.0)
+	_layout_centered_panel(_pause_panel, 540.0, 390.0)
+
+
+func _apply_responsive_layout() -> void:
+	var view := get_viewport_rect().size
+	if view.x <= 0.0 or view.y <= 0.0:
+		return
+	var portrait := view.y > view.x * 1.15
+	if _hud_panel != null:
+		_hud_panel.anchor_bottom = 0.22 if portrait else 0.255
+	if _story_panel != null:
+		_story_panel.anchor_top = 0.235 if portrait else 0.39
 
 
 func _input(event: InputEvent) -> void:
@@ -78,7 +122,7 @@ func _apply_theme() -> void:
 	var game_theme := Theme.new()
 	if _font != null:
 		game_theme.default_font = _font
-	game_theme.default_font_size = 18
+	game_theme.default_font_size = 20
 	theme = game_theme
 	layout_direction = Control.LAYOUT_DIRECTION_RTL
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -134,14 +178,14 @@ func _build_title_screen() -> void:
 	content.layout_direction = Control.LAYOUT_DIRECTION_RTL
 	scroll.add_child(content)
 
-	var eyebrow := _label("حكاية بقاء عربية تفاعلية", 15, COLOR_TEAL, HORIZONTAL_ALIGNMENT_CENTER)
+	var eyebrow := _label("حكاية بقاء عربية تفاعلية", 17, COLOR_TEAL, HORIZONTAL_ALIGNMENT_CENTER)
 	content.add_child(eyebrow)
-	var title := _label("آخر رحلة", 48, COLOR_PAPER, HORIZONTAL_ALIGNMENT_CENTER)
+	var title := _label("آخر رحلة", 52, COLOR_PAPER, HORIZONTAL_ALIGNMENT_CENTER)
 	title.custom_minimum_size = Vector2(0, 66)
 	content.add_child(title)
-	var tagline := _label("العالم لم يعد كما كان.", 23, COLOR_SAND, HORIZONTAL_ALIGNMENT_CENTER)
+	var tagline := _label("العالم لم يعد كما كان.", 25, COLOR_SAND, HORIZONTAL_ALIGNMENT_CENTER)
 	content.add_child(tagline)
-	var intro := _label("من السعودية إلى تشاد، طريقٌ واحد وثلاث بدايات وقراراتٌ لا تعود إلى الوراء.", 17, COLOR_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
+	var intro := _label("من السعودية إلى تشاد، طريقٌ واحد وثلاث بدايات وقراراتٌ لا تعود إلى الوراء.", 20, COLOR_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
 	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	content.add_child(intro)
 
@@ -150,20 +194,24 @@ func _build_title_screen() -> void:
 	separator.custom_minimum_size = Vector2(0, 1)
 	content.add_child(separator)
 
-	var name_caption := _label("اسم الناجي", 16, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
+	var name_caption := _label("اسم الناجي", 18, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
 	content.add_child(name_caption)
 	_name_input = LineEdit.new()
 	_name_input.name = "اسم الناجي"
-	_name_input.text = "محسن"
+	_name_input.text = ""
 	_name_input.placeholder_text = "محسن"
 	_name_input.max_length = 24
-	_name_input.custom_minimum_size = Vector2(0, 48)
+	_name_input.custom_minimum_size = Vector2(0, 58)
 	_name_input.alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_name_input.virtual_keyboard_enabled = true
+	_name_input.virtual_keyboard_show_on_focus = true
+	_name_input.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_DEFAULT
+	_name_input.select_all_on_focus = true
 	_set_rtl(_name_input)
 	_style_field(_name_input)
 	content.add_child(_name_input)
 
-	var country_caption := _label("مكان الهبوط الاضطراري", 16, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
+	var country_caption := _label("مكان الهبوط الاضطراري", 18, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
 	content.add_child(country_caption)
 	_country_input = OptionButton.new()
 	_country_input.name = "مكان الهبوط"
@@ -171,18 +219,18 @@ func _build_title_screen() -> void:
 	_country_input.add_item("المغرب", 1)
 	_country_input.add_item("تشاد — البداية من الجنوب", 2)
 	_country_input.selected = 0
-	_country_input.custom_minimum_size = Vector2(0, 48)
+	_country_input.custom_minimum_size = Vector2(0, 58)
 	_set_rtl(_country_input)
 	_style_option(_country_input)
 	content.add_child(_country_input)
 
 	var start_button := _button("ابدأ الرحلة", true)
 	start_button.name = "زر بدء الرحلة"
-	start_button.custom_minimum_size = Vector2(0, 58)
+	start_button.custom_minimum_size = Vector2(0, 64)
 	start_button.pressed.connect(_start_game)
 	content.add_child(start_button)
 
-	var session_note := _label("تقدمك مؤقت لهذه الجلسة؛ لا يُحفظ عند إغلاق الصفحة.", 14, COLOR_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
+	var session_note := _label("تقدمك مؤقت لهذه الجلسة؛ لا يُحفظ عند إغلاق الصفحة.", 16, COLOR_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
 	session_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	content.add_child(session_note)
 
@@ -197,6 +245,7 @@ func _build_story_screen() -> void:
 
 	var hud := PanelContainer.new()
 	hud.name = "شريط الحالة"
+	_hud_panel = hud
 	hud.add_theme_stylebox_override("panel", _panel_style(COLOR_INK_SOFT))
 	hud.anchor_left = 0.025
 	hud.anchor_right = 0.975
@@ -223,11 +272,11 @@ func _build_story_screen() -> void:
 	var top_row := HBoxContainer.new()
 	top_row.add_theme_constant_override("separation", 10)
 	hud_stack.add_child(top_row)
-	_hud_location = _label("الموقع: —", 18, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
+	_hud_location = _label("الموقع: —", 20, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
 	_hud_location.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top_row.add_child(_hud_location)
 	_pause_button = _button("إيقاف", false)
-	_pause_button.custom_minimum_size = Vector2(112, 42)
+	_pause_button.custom_minimum_size = Vector2(128, 48)
 	_pause_button.pressed.connect(_toggle_pause)
 	top_row.add_child(_pause_button)
 
@@ -278,17 +327,17 @@ func _build_story_screen() -> void:
 	story_content.layout_direction = Control.LAYOUT_DIRECTION_RTL
 	story_scroll.add_child(story_content)
 
-	_scene_title = _label("", 24, COLOR_SAND, HORIZONTAL_ALIGNMENT_RIGHT)
-	_scene_title.custom_minimum_size = Vector2(0, 32)
+	_scene_title = _label("", 29, COLOR_SAND, HORIZONTAL_ALIGNMENT_RIGHT)
+	_scene_title.custom_minimum_size = Vector2(0, 38)
 	story_content.add_child(_scene_title)
-	_speaker_label = _label("", 15, COLOR_TEAL, HORIZONTAL_ALIGNMENT_RIGHT)
+	_speaker_label = _label("", 18, COLOR_TEAL, HORIZONTAL_ALIGNMENT_RIGHT)
 	story_content.add_child(_speaker_label)
-	_story_text = _label("", 18, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
+	_story_text = _label("", 21, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
 	_story_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_story_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_story_text.custom_minimum_size = Vector2(0, 70)
+	_story_text.custom_minimum_size = Vector2(0, 90)
 	story_content.add_child(_story_text)
-	_result_label = _label("", 14, COLOR_MUTED, HORIZONTAL_ALIGNMENT_RIGHT)
+	_result_label = _label("", 17, COLOR_MUTED, HORIZONTAL_ALIGNMENT_RIGHT)
 	_result_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	story_content.add_child(_result_label)
 
@@ -333,8 +382,8 @@ func _build_pause_screen() -> void:
 	content.add_theme_constant_override("separation", 12)
 	content.layout_direction = Control.LAYOUT_DIRECTION_RTL
 	margin.add_child(content)
-	content.add_child(_label("توقفت الرحلة", 30, COLOR_PAPER, HORIZONTAL_ALIGNMENT_CENTER))
-	var note := _label("لا يوجد حفظ دائم؛ يمكن استئناف هذه الجلسة أو البدء من جديد.", 16, COLOR_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
+	content.add_child(_label("توقفت الرحلة", 34, COLOR_PAPER, HORIZONTAL_ALIGNMENT_CENTER))
+	var note := _label("لا يوجد حفظ دائم؛ يمكن استئناف هذه الجلسة أو البدء من جديد.", 18, COLOR_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	content.add_child(note)
 	var resume := _button("تابع الرحلة", true)
@@ -382,8 +431,7 @@ func _show_title() -> void:
 	if _pause_layer != null:
 		_pause_layer.visible = false
 	_set_background(TITLE_BACKGROUND)
-	if _name_input != null:
-		_name_input.grab_focus()
+	get_viewport().gui_release_focus()
 
 
 func _toggle_pause() -> void:
@@ -537,9 +585,9 @@ func _label(text_value: String, font_size: int, color: Color, alignment: Horizon
 
 
 func _hud_chip() -> Label:
-	var chip := _label("", 15, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
+	var chip := _label("", 17, COLOR_PAPER, HORIZONTAL_ALIGNMENT_RIGHT)
 	chip.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	chip.custom_minimum_size = Vector2(0, 25)
+	chip.custom_minimum_size = Vector2(0, 30)
 	return chip
 
 
@@ -547,7 +595,7 @@ func _button(text_value: String, primary: bool) -> Button:
 	var button := Button.new()
 	button.text = text_value
 	button.focus_mode = Control.FOCUS_ALL
-	button.custom_minimum_size = Vector2(0, 48)
+	button.custom_minimum_size = Vector2(0, 56)
 	button.add_theme_stylebox_override("normal", _button_style(primary, false))
 	button.add_theme_stylebox_override("hover", _button_style(primary, true))
 	button.add_theme_stylebox_override("pressed", _button_style(true, false))
@@ -555,7 +603,7 @@ func _button(text_value: String, primary: bool) -> Button:
 	button.add_theme_color_override("font_color", COLOR_PAPER if primary else COLOR_SAND)
 	button.add_theme_color_override("font_hover_color", Color.WHITE)
 	button.add_theme_color_override("font_pressed_color", COLOR_PAPER)
-	button.add_theme_font_size_override("font_size", 17)
+	button.add_theme_font_size_override("font_size", 19)
 	_set_rtl(button)
 	return button
 
@@ -573,7 +621,7 @@ func _style_field(control: Control) -> void:
 	control.add_theme_stylebox_override("normal", field_style)
 	control.add_theme_color_override("font_color", COLOR_PAPER)
 	control.add_theme_color_override("font_placeholder_color", COLOR_MUTED)
-	control.add_theme_font_size_override("font_size", 17)
+	control.add_theme_font_size_override("font_size", 20)
 
 
 func _style_option(control: Control) -> void:
@@ -583,7 +631,7 @@ func _style_option(control: Control) -> void:
 	control.add_theme_stylebox_override("normal", field_style)
 	control.add_theme_stylebox_override("hover", _panel_style(Color(0.16, 0.20, 0.19, 1.0)))
 	control.add_theme_color_override("font_color", COLOR_PAPER)
-	control.add_theme_font_size_override("font_size", 17)
+	control.add_theme_font_size_override("font_size", 20)
 
 
 func _panel_style(color: Color) -> StyleBoxFlat:
@@ -629,9 +677,9 @@ func _set_rtl(control: Control) -> void:
 
 func _choice_height(caption: String) -> float:
 	var viewport_width := get_viewport_rect().size.x
-	var estimated_characters_per_line := maxi(22, int((viewport_width - 92.0) / 9.5))
+	var estimated_characters_per_line := maxi(18, int((viewport_width - 92.0) / 11.0))
 	var lines := maxi(1, int(ceil(float(caption.length()) / float(estimated_characters_per_line))))
-	return maxf(56.0, float(lines * 23 + 24))
+	return maxf(64.0, float(lines * 28 + 26))
 
 
 func _layout_centered_panel(panel: PanelContainer, max_width: float, max_height: float) -> void:
